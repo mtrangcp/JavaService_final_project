@@ -1,8 +1,10 @@
 package com.btvn.serviceprojectfinal.controller.candidate;
 
+import com.btvn.serviceprojectfinal.model.dto.request.ChangePasswordRequest;
 import com.btvn.serviceprojectfinal.model.dto.request.candidate.ApplyJobRequest;
 import com.btvn.serviceprojectfinal.model.dto.response.ApiResponse;
 import com.btvn.serviceprojectfinal.model.dto.response.ApplicationResponse;
+import com.btvn.serviceprojectfinal.model.dto.response.CvUploadResponse;
 import com.btvn.serviceprojectfinal.model.dto.response.admin.JobPostingResponse;
 import com.btvn.serviceprojectfinal.model.dto.response.admin.PageResponse;
 import com.btvn.serviceprojectfinal.model.entity.enums.ApplicationStatusEnum;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/candidate")
@@ -62,5 +65,23 @@ public class CandidateController {
         ApplicationResponse data = candidateService.getMyApplicationById(id);
         return ResponseEntity.ok(
                 ApiResponse.success("Lấy chi tiết hồ sơ thành công", data));
+    }
+
+    @PostMapping(value = "/cv/upload", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<CvUploadResponse>> uploadCv(
+            @RequestParam("file") MultipartFile file) {
+
+        CvUploadResponse data = candidateService.uploadCv(file);
+        return ResponseEntity.ok(
+                ApiResponse.success("Tải lên CV thành công", data));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+
+        candidateService.changePassword(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Đổi mật khẩu thành công", null));
     }
 }

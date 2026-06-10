@@ -34,15 +34,14 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers(
                                 "/api/v1/auth/**"
                         ).permitAll()
-                        // Protected by role
+
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/employer/**").hasRole("EMPLOYER")
                         .requestMatchers("/api/v1/candidate/**").hasRole("CANDIDATE")
-                        // Tất cả còn lại đều cần authenticated
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -67,7 +66,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Dùng jbcrypt wrapper tương thích Spring Security
         return new PasswordEncoder() {
             @Override
             public String encode(CharSequence rawPassword) {
