@@ -13,17 +13,15 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class ApplicationLoggingAspect {
-
-    // Ghi log TRƯỚC khi nộp hồ sơ
-    @Before("execution(* com.btvn.serviceprojectfinal.service.CandidateService.applyJob(..))")
+    @Before("execution(* com.btvn.serviceprojectfinal.service.candidate.CandidateService.applyJob(..))")
     public void logBeforeApply(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         log.info("[AOP - BEFORE] Candidate đang thực hiện nộp hồ sơ. Args: {}", args[0]);
     }
 
-    // Ghi log SAU KHI nộp hồ sơ THÀNH CÔNG — UC-04 yêu cầu @AfterReturning
+
     @AfterReturning(
-            pointcut = "execution(* com.btvn.serviceprojectfinal.service.CandidateService.applyJob(..))",
+            pointcut = "execution(* com.btvn.serviceprojectfinal.service.candidate.CandidateService.applyJob(..))",
             returning = "result"
     )
     public void logAfterApplySuccess(JoinPoint joinPoint, Object result) {
@@ -37,9 +35,9 @@ public class ApplicationLoggingAspect {
         }
     }
 
-    // Ghi log KHI CÓ EXCEPTION — @AfterThrowing
+
     @AfterThrowing(
-            pointcut = "execution(* com.btvn.serviceprojectfinal.service.CandidateService.applyJob(..))",
+            pointcut = "execution(* com.btvn.serviceprojectfinal.service.candidate.CandidateService.applyJob(..))",
             throwing = "exception"
     )
     public void logAfterApplyFailed(JoinPoint joinPoint, Exception exception) {
@@ -48,7 +46,7 @@ public class ApplicationLoggingAspect {
                 exception.getMessage());
     }
 
-    // Ghi log khi Employer cập nhật trạng thái hồ sơ
+
     @AfterReturning(
             pointcut = "execution(* com.btvn.serviceprojectfinal.service.employer.EmployerService.updateApplicationStatus(..))",
             returning = "result"
