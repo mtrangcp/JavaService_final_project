@@ -6,10 +6,16 @@ import com.btvn.serviceprojectfinal.model.dto.request.LoginRequest;
 import com.btvn.serviceprojectfinal.model.dto.request.RegisterRequest;
 import com.btvn.serviceprojectfinal.model.dto.response.AuthResponse;
 import com.btvn.serviceprojectfinal.model.entity.enums.RoleEnum;
+import com.btvn.serviceprojectfinal.repository.TokenBlacklistRepository;
+import com.btvn.serviceprojectfinal.security.CustomUserDetailsService;
 import com.btvn.serviceprojectfinal.service.AuthService;
+import com.btvn.serviceprojectfinal.service.JwtService;
+import com.btvn.serviceprojectfinal.service.candidate.CandidateService;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -25,19 +31,26 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AuthController.class)
+
+@WebMvcTest(
+        controllers = AuthController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class
+)
 @Import(GlobalExceptionHandler.class)
 @DisplayName("AuthController Unit Tests")
 class AuthControllerTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired ObjectMapper objectMapper;
 
-    @Autowired
-    private MockMvc mockMvc;
+    @MockitoBean AuthService authService;
+    @MockitoBean CandidateService candidateService;
 
     @MockitoBean
-    private AuthService authService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    JwtService jwtService;
+    @MockitoBean
+    CustomUserDetailsService customUserDetailsService;
+    @MockitoBean
+    TokenBlacklistRepository tokenBlacklistRepository;
 
     private AuthResponse mockAuthResponse() {
         return AuthResponse.builder()
