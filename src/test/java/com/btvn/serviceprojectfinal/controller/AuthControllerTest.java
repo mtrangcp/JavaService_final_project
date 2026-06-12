@@ -12,11 +12,12 @@ import com.btvn.serviceprojectfinal.service.AuthService;
 import com.btvn.serviceprojectfinal.service.JwtService;
 import com.btvn.serviceprojectfinal.service.candidate.CandidateService;
 
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +32,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @WebMvcTest(
         controllers = AuthController.class,
         excludeAutoConfiguration = SecurityAutoConfiguration.class
@@ -39,18 +39,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(GlobalExceptionHandler.class)
 @DisplayName("AuthController Unit Tests")
 class AuthControllerTest {
-    @Autowired MockMvc mockMvc;
-    @Autowired ObjectMapper objectMapper;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @MockitoBean AuthService authService;
-    @MockitoBean CandidateService candidateService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
-    JwtService jwtService;
+    private AuthService authService;
+
     @MockitoBean
-    CustomUserDetailsService customUserDetailsService;
+    private CandidateService candidateService;
+
     @MockitoBean
-    TokenBlacklistRepository tokenBlacklistRepository;
+    private JwtService jwtService;
+
+    @MockitoBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockitoBean
+    private TokenBlacklistRepository tokenBlacklistRepository;
 
     private AuthResponse mockAuthResponse() {
         return AuthResponse.builder()

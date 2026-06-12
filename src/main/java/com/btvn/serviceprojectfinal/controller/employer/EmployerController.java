@@ -41,7 +41,7 @@ public class EmployerController {
     @PutMapping("/jobs/{id}")
     public ResponseEntity<ApiResponse<JobPostingResponse>> updateJob(
             @PathVariable Long id,
-            @RequestBody UpdateJobRequest request) {
+            @Valid @RequestBody UpdateJobRequest request) {
         JobPostingResponse data = employerService.updateJob(id, request);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật tin tuyển dụng thành công", data));
     }

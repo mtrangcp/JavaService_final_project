@@ -253,13 +253,8 @@ public class CandidateService {
         userRepository.save(user);
     }
 
-    // =============================================
-// FR-10: Quên mật khẩu — Bước 1: Gửi OTP
-// =============================================
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
-        // Kiểm tra email tồn tại (không tiết lộ email có tồn tại hay không
-        // vì lý do bảo mật — luôn trả về thông báo chung)
         userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
 
             // Xóa toàn bộ OTP cũ của email này

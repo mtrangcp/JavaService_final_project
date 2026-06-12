@@ -20,7 +20,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    @Async
+    @Async("emailTaskExecutor")
     public void sendOtpEmail(String toEmail, String fullName, String otpCode,
                              long expirationMinutes) {
         try {

@@ -20,43 +20,51 @@ repositories {
 
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testCompileOnly 'org.projectlombok:lombok'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mockito:mockito-core'
-    testRuntimeOnly 'com.h2database:h2'
 
-    // Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
-    implementation("org.springframework.boot:spring-boot-starter-aop:4.0.0-M2")
-    // Source: https://mvnrepository.com/artifact/org.mindrot/jbcrypt
-    implementation("org.mindrot:jbcrypt:0.4")
-    // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
-    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-    // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
-    // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    // Core
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+    // Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    // Cloudinary SDK
+    // Cloudinary
     implementation 'com.cloudinary:cloudinary-http45:1.39.0'
 
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
+    // BCrypt
+    implementation 'org.mindrot:jbcrypt:0.4'
+
+    // DB
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // DevTools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // TEST
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'com.h2database:h2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
