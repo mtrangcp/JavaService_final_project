@@ -1,6 +1,5 @@
 package com.btvn.serviceprojectfinal.service;
 
-import com.btvn.serviceprojectfinal.repository.TokenBlacklistRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -14,6 +13,7 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -23,9 +23,10 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    private final TokenBlacklistRepository tokenBlacklistRepository;
+    // ← Thay TokenBlacklistRepository bằng TokenBlacklistService
+    private final TokenBlacklistService tokenBlacklistService;
 
-//
+    // ===== GENERATE =====
     public String generateAccessToken(String email, String role) {
         return buildToken(email, role, "ACCESS", accessTokenExpiration);
     }
@@ -34,7 +35,8 @@ public class JwtService {
         return buildToken(email, role, "REFRESH", refreshTokenExpiration);
     }
 
-    private String buildToken(String email, String role, String tokenType, long expiration) {
+    private String buildToken(String email, String role,
+                              String tokenType, long expiration) {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
@@ -45,10 +47,7 @@ public class JwtService {
                 .compact();
     }
 
-    // extract
-    public String extractTokenType(String token) {
-        return parseClaims(token).get("tokenType", String.class);
-    }
+    // ===== EXTRACT =====
     public String extractEmail(String token) {
         return parseClaims(token).getSubject();
     }
@@ -57,25 +56,26 @@ public class JwtService {
         return parseClaims(token).get("role", String.class);
     }
 
+    public String extractTokenType(String token) {
+        return parseClaims(token).get("tokenType", String.class);
+    }
+
     public Date extractExpiration(String token) {
         return parseClaims(token).getExpiration();
     }
 
-    // validate
+    // ===== VALIDATE =====
     public boolean isTokenValid(String token) {
         try {
             parseClaims(token);
-            return !isBlacklisted(token);
+            // ← Dùng Redis thay DB
+            return !tokenBlacklistService.isBlacklisted(token);
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    public boolean isBlacklisted(String token) {
-        return tokenBlacklistRepository.existsByTokenString(token);
-    }
-
-    //
+    // ===== PRIVATE =====
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())

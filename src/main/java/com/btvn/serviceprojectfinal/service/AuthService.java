@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -101,6 +103,7 @@ public class AuthService {
     }
 
 
+    @Transactional
     public void logout(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new AppException("Token không hợp lệ", HttpStatus.UNAUTHORIZED);
@@ -108,20 +111,18 @@ public class AuthService {
 
         String token = authHeader.substring(7);
 
-        if (tokenBlacklistRepository.existsByTokenString(token)) {
+        if (tokenBlacklistService.isBlacklisted(token)) {
             throw new AppException("Token đã bị thu hồi trước đó",
                     HttpStatus.UNAUTHORIZED);
         }
 
-        TokenBlacklist blacklisted = TokenBlacklist.builder()
-                .tokenString(token)
-                .revokedAt(LocalDateTime.now())
-                .build();
-
-        tokenBlacklistRepository.save(blacklisted);
+        // Lấy thời gian hết hạn của token để set TTL chính xác cho Redis
+        Date expiration = jwtService.extractExpiration(token);
+        tokenBlacklistService.blacklistToken(token, expiration);
     }
 
-
+    // ===== FR-02: REFRESH TOKEN =====
+    @Transactional
     public AuthResponse refreshToken(RefreshTokenRequest request) {
         String refreshToken = request.getRefreshToken();
 
@@ -140,21 +141,17 @@ public class AuthService {
         String role = jwtService.extractRole(refreshToken);
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException("Người dùng không tồn tại",
-                        HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new AppException(
+                        "Người dùng không tồn tại", HttpStatus.NOT_FOUND));
 
         if (!user.getIsActive()) {
             throw new AppException("Tài khoản đã bị khóa", HttpStatus.FORBIDDEN);
         }
 
-        // Blacklist refresh token cũ sau khi dùng (Rotation)
-        TokenBlacklist blacklisted = TokenBlacklist.builder()
-                .tokenString(refreshToken)
-                .revokedAt(LocalDateTime.now())
-                .build();
-        tokenBlacklistRepository.save(blacklisted);
+        // Blacklist refresh token cũ vào Redis (Rotation Strategy)
+        Date expiration = jwtService.extractExpiration(refreshToken);
+        tokenBlacklistService.blacklistToken(refreshToken, expiration);
 
-        // Cấp token mới
         String newAccessToken = jwtService.generateAccessToken(email, role);
         String newRefreshToken = jwtService.generateRefreshToken(email, role);
 
