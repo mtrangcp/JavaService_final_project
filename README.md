@@ -23,13 +23,10 @@ Mọi API đều trả về cùng 1 cấu trúc:
 ## Ma trận phân quyền
 
 | Prefix | Role yêu cầu |
-|--------|-------------|
 | `/api/v1/auth/**` | Public — không cần token |
 | `/api/v1/admin/**` | `ADMIN` |
 | `/api/v1/employer/**` | `EMPLOYER` |
 | `/api/v1/candidate/**` | `CANDIDATE` |
-
----
 
 ## Mục lục
 
@@ -194,7 +191,8 @@ Mọi API đều trả về cùng 1 cấu trúc:
 - **Method:** `POST`
 - **Endpoint:** `/api/v1/auth/logout`
 - **Phân quyền:** Authenticated — yêu cầu `AccessToken` hợp lệ
-- **Mô tả:** Đưa `AccessToken` hiện tại vào Blacklist. Mọi request tiếp theo dùng token này đều bị từ chối, kể cả khi chưa hết hạn.
+- **Mô tả:** Đưa `AccessToken` hiện tại vào Blacklist. Mọi request tiếp theo dùng token này đều bị từ chối, 
+kể cả khi chưa hết hạn.
 
 ### Request Header
 
